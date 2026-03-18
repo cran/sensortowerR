@@ -117,12 +117,10 @@ if (is.null(unified_app_id) && is.null(ios_app_id) && is.null(android_app_id)) {
   }
 
   # Authentication
-  auth_token_val <- auth_token %||% Sys.getenv("SENSORTOWER_AUTH_TOKEN")
-  if (auth_token_val == "") {
-    rlang::abort(
-      "Authentication token not found. Set SENSORTOWER_AUTH_TOKEN environment variable."
-    )
-  }
+  auth_token_val <- resolve_auth_token(
+    auth_token,
+    error_message = "Authentication token not found. Set SENSORTOWER_AUTH_TOKEN environment variable."
+  )
 
   # Resolve IDs - the retention endpoint requires platform-specific IDs
   platforms_to_query <- list()
@@ -249,14 +247,13 @@ fetch_retention_for_platform <- function(app_id,
   }
 
   # Build request
-  base_url <- "https://api.sensortower.com"
-
-  req <- httr2::request(base_url) %>%
-    httr2::req_url_path_append("v1", os, "usage", "retention") %>%
-    httr2::req_url_query(!!!query_params) %>%
+  req <- build_request(
+    base_url = st_api_base_url(),
+    path_segments = st_endpoint_segments("usage_retention", os = os),
+    query_params = query_params
+  ) %>%
     httr2::req_headers(
-      "Accept" = "application/json",
-      "User-Agent" = "sensortowerR (https://github.com/ge-data-solutions/sensortowerR)"
+      "Accept" = "application/json"
     ) %>%
     httr2::req_timeout(30)
 
@@ -309,7 +306,7 @@ fetch_retention_for_platform <- function(app_id,
   # Process each app's retention data
   # app_data_list is a data frame when flattened, or a list of lists
   if (is.data.frame(app_data_list)) {
-    # Handle data.frame (typical from fromJSON with flatten=TRUE)
+    # Handle tibble::tibble(typical from fromJSON with flatten=TRUE)
     processed <- lapply(seq_len(nrow(app_data_list)), function(i) {
       app_row <- app_data_list[i, ]
 

@@ -1,7 +1,7 @@
-# Custom Filter Integration Plan for sensortowerR
+# Custom Filter Integration Plan for SensorTowerR
 
 ## Overview
-This document outlines how to integrate custom filter support (`custom_fields_filter_id` and `custom_tags_mode`) across multiple sensortowerR functions to maximize reusability.
+This document outlines how to integrate custom filter support (`custom_fields_filter_id` and `custom_tags_mode`) across multiple SensorTowerR functions to maximize reusability.
 
 ## Functions That Should Support Custom Filters
 
@@ -255,4 +255,4 @@ Custom filters created in the Sensor Tower web interface can be used across mult
 
 ## Conclusion
 
-By systematically adding custom filter support across relevant functions, we can make the sensortowerR package much more powerful for users who leverage Sensor Tower's web interface filters. This creates a seamless workflow between web and R environments.
+By systematically adding custom filter support across relevant functions, we can make the SensorTowerR package much more powerful for users who leverage Sensor Tower's web interface filters. This creates a seamless workflow between web and R environments.

@@ -238,24 +238,24 @@ st_extract_url_params <- function(url) {
   for (name in unique(names(parsed$query))) {
     values <- parsed$query[names(parsed$query) == name]
     if (length(values) == 1) {
-      params_list[[length(params_list) + 1]] <- data.frame(
+      params_list[[length(params_list) + 1]] <- tibble::tibble(
         parameter = name,
         value = values[[1]],
         count = 1,
-        stringsAsFactors = FALSE
+
       )
     } else {
       # Multiple values (like country)
-      params_list[[length(params_list) + 1]] <- data.frame(
+      params_list[[length(params_list) + 1]] <- tibble::tibble(
         parameter = name,
         value = paste(unlist(values), collapse = ", "),
         count = length(values),
-        stringsAsFactors = FALSE
+
       )
     }
   }
   
-  params_df <- do.call(rbind, params_list)
+  params_df <- dplyr::bind_rows(params_list)
   
   # Add interpretation
   params_df$interpretation <- ""

@@ -604,8 +604,8 @@ frequency</li>
 <span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co"># Custom analysis on filtered data</span></span>
 <span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>word_games <span class="sc">%&gt;%</span></span>
 <span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>    <span class="at">dau =</span> <span class="st">`</span><span class="at">aggregate_tags.Last 30 Days Average DAU (US)</span><span class="st">`</span>,</span>
-<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>    <span class="at">retention_d7 =</span> <span class="st">`</span><span class="at">aggregate_tags.Day 7 Retention (Last Quarter, US)</span><span class="st">`</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>    <span class="at">dau =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(dau_30d_us, users_absolute),</span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>    <span class="at">retention_d7 =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(retention_7d_us, <span class="st">`</span><span class="at">aggregate_tags.Day 7 Retention (Last Quarter, US)</span><span class="st">`</span>)</span>
 <span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(dau)) <span class="sc">%&gt;%</span></span>
 <span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>

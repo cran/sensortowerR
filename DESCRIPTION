@@ -1,6 +1,6 @@
 Package: sensortowerR
 Title: Interface to 'Sensor Tower' Mobile App Intelligence API
-Version: 0.9.4
+Version: 0.9.7
 Description: Interface to the 'Sensor Tower' API <https://app.sensortower.com/api/docs/app_analysis> 
     for mobile app analytics and market intelligence. Provides functions to retrieve 
     app metadata, publisher information, download and revenue estimates, active user 
@@ -26,6 +26,6 @@ Author: Phillip Black [aut, cre]
 Maintainer: Phillip Black <pblack@gameeconomistconsulting.com>
 Depends: R (>= 4.1.0)
 NeedsCompilation: no
-Packaged: 2025-12-19 15:23:46 UTC; phillip
+Packaged: 2026-03-18 13:08:10 UTC; phillip
 Repository: CRAN
-Date/Publication: 2025-12-30 19:20:02 UTC
+Date/Publication: 2026-03-18 13:30:02 UTC

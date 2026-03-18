@@ -14,7 +14,7 @@ cat(sprintf("Current sensortowerR version: %s\n", pkg_version))
 
 if (pkg_version < "0.2.3") {
   cat("\nWARNING: Please update to sensortowerR v0.2.3+ for automatic revenue standardization\n")
-  cat("Install the latest version with: devtools::install_github('econosopher/sensortowerR')\n\n")
+  cat("Install the latest version with: devtools::install_github('econosopher/SensorTowerR')\n\n")
 }
 
 # Example 1: st_top_charts() with standardized revenue

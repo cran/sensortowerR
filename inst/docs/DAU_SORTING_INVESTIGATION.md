@@ -92,6 +92,6 @@ Keep current solution but monitor for:
 If Sensor Tower fixes their API to accept `measure = "DAU"` on the sales endpoint, we should update to use that directly rather than the current workaround.
 
 ## Related Files
-- `/Users/phillip/Documents/vibe_coding_projects/sensortowerR/R/st_top_charts.R` - Main function
-- `/Users/phillip/Documents/vibe_coding_projects/sensortowerR/R/utils.R` - Parameter preparation
+- `/Users/phillip/Documents/vibe_coding_projects/SensorTowerR/R/st_top_charts.R` - Main function
+- `/Users/phillip/Documents/vibe_coding_projects/SensorTowerR/R/utils.R` - Parameter preparation
 - `/Users/phillip/Documents/vibe_coding_projects/blog_post_source/2025_08_20_puzzle/puzzle_kpi_table.R` - Working example

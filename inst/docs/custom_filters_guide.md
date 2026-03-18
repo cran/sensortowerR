@@ -1,8 +1,8 @@
-# Custom Filters Guide for sensortowerR
+# Custom Filters Guide for SensorTowerR
 
 ## Overview
 
-Custom filters created in the Sensor Tower web interface can now be used directly in sensortowerR. This allows you to leverage complex filtering logic from the web UI in your R analyses.
+Custom filters created in the Sensor Tower web interface can now be used directly in SensorTowerR. This allows you to leverage complex filtering logic from the web UI in your R analyses.
 
 ## What are Custom Filters?
 
@@ -39,7 +39,7 @@ Based on API testing, custom filters are supported by these functions:
 ### Step 2: Use in R
 
 ```r
-library(sensortowerR)
+library(SensorTowerR)
 
 # Your filter ID from the web interface
 my_filter_id <- "60746340241bc16eb8a65d76"

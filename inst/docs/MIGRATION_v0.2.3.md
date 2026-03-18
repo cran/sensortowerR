@@ -1,12 +1,12 @@
-# Migration Guide for sensortowerR v0.2.3
+# Migration Guide for SensorTowerR v0.2.3
 
 ## Overview
 
-sensortowerR v0.2.3 introduces automatic revenue standardization across all functions. This guide helps you migrate existing code to use the new standardized revenue columns.
+SensorTowerR v0.2.3 introduces automatic revenue standardization across all functions. This guide helps you migrate existing code to use the new standardized revenue columns.
 
 ## What Changed?
 
-Previously, different sensortowerR functions returned revenue in different units:
+Previously, different SensorTowerR functions returned revenue in different units:
 - `st_top_charts()`: cents (revenue_absolute)
 - `st_sales_report()`: dollars (total_revenue)
 - `st_top_publishers()`: cents (revenue_absolute)
@@ -116,10 +116,10 @@ gini_coef <- calculate_gini(data$revenue)
 
 ```r
 # Check if you have v0.2.3+
-if (packageVersion("sensortowerR") >= "0.2.3") {
+if (packageVersion("SensorTowerR") >= "0.2.3") {
   message("You have the standardized revenue version!")
 } else {
-  message("Please update: devtools::install_github('econosopher/sensortowerR')")
+  message("Please update: devtools::install_github('econosopher/SensorTowerR')")
 }
 ```
 
@@ -134,4 +134,4 @@ if (packageVersion("sensortowerR") >= "0.2.3") {
 
 - Check the revenue units guide: `inst/docs/revenue_units_guide.md`
 - See examples: `inst/examples/revenue_standardization_example.R`
-- Report issues: https://github.com/econosopher/sensortowerR/issues
+- Report issues: https://github.com/econosopher/SensorTowerR/issues

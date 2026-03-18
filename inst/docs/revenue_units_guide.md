@@ -1,12 +1,12 @@
-# Revenue Units Guide for sensortowerR
+# Revenue Units Guide for SensorTowerR
 
 ## Overview
 
-The Sensor Tower API returns revenue values in different units depending on the endpoint. To ensure consistency and prevent confusion, sensortowerR v0.2.3+ automatically standardizes revenue units across all functions.
+The Sensor Tower API returns revenue values in different units depending on the endpoint. To ensure consistency and prevent confusion, SensorTowerR v0.2.3+ automatically standardizes revenue units across all functions.
 
 ## Quick Reference
 
-| Function | Original API Unit | sensortowerR Standard Column | Unit |
+| Function | Original API Unit | SensorTowerR Standard Column | Unit |
 |----------|------------------|------------------------------|------|
 | `st_top_charts()` | cents | `revenue` | base currency |
 | `st_sales_report()` | base currency | `total_revenue` | base currency |
@@ -16,19 +16,19 @@ The Sensor Tower API returns revenue values in different units depending on the 
 
 ### st_top_charts()
 - **API returns**: `revenue_absolute` in cents
-- **sensortowerR provides**: 
+- **SensorTowerR provides**: 
   - `revenue` - standardized to base currency units
   - `revenue_absolute` - preserved original cents value
   
 ### st_sales_report()
 - **API returns**: revenue values in cents
-- **sensortowerR provides**: 
+- **SensorTowerR provides**: 
   - `total_revenue`, `iphone_revenue`, `ipad_revenue` - all in base currency
   - `*_cents` columns preserved for reference
 
 ### st_top_publishers()
 - **API returns**: `revenue_absolute` in cents
-- **sensortowerR provides**: 
+- **SensorTowerR provides**: 
   - `revenue_usd` - converted to base currency
   - `revenue_absolute` - preserved original cents value
 

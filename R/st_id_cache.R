@@ -57,7 +57,14 @@ lookup_cached_id <- function(id) {
 #' Returns the CRAN-compliant cache directory using tools::R_user_dir()
 #' @noRd
 get_cache_dir <- function() {
-  tools::R_user_dir("sensortowerR", "cache")
+  new_cache_dir <- tools::R_user_dir("sensortowerR", "cache")
+  old_cache_dir <- tools::R_user_dir("SensorTowerR", "cache")
+
+  if (!dir.exists(new_cache_dir) && dir.exists(old_cache_dir)) {
+    return(old_cache_dir)
+  }
+
+  new_cache_dir
 }
 
 #' Save Cache to Disk
@@ -78,7 +85,7 @@ save_id_cache <- function(path = NULL) {
   cache <- get_id_cache()
   if (length(cache) > 0) {
     saveRDS(cache, path)
-    if (getOption("sensortowerR.verbose", FALSE)) {
+    if (getOption("sensortowerR.verbose", getOption("SensorTowerR.verbose", FALSE))) {
       message("Saved ", length(cache), " ID mappings to cache")
     }
   }
@@ -96,7 +103,7 @@ load_id_cache <- function(path = NULL) {
   if (file.exists(path)) {
     cache <- readRDS(path)
     .sensortowerR_env$id_cache <- cache
-    if (getOption("sensortowerR.verbose", FALSE)) {
+    if (getOption("sensortowerR.verbose", getOption("SensorTowerR.verbose", FALSE))) {
       message("Loaded ", length(cache), " ID mappings from cache")
     }
   }
@@ -135,7 +142,7 @@ resolve_app_id <- function(id, auth_token = Sys.getenv("SENSORTOWER_AUTH_TOKEN")
       input_id = id,
       ios_id = result$ios_app_id,
       android_id = result$android_app_id,
-      unified_id = result$unified_id,
+      unified_id = result$unified_app_id,
       app_name = result$app_name,
       publisher_id = result$publisher_id
     )
@@ -307,6 +314,6 @@ preload_common_apps <- function(auth_token = Sys.getenv("SENSORTOWER_AUTH_TOKEN"
 }
 
 # NOTE: Removed .onAttach and .onDetach hooks that automatically created
-# ~/.sensortowerR directory to comply with CRAN policy.
+# the package cache directory to comply with CRAN policy.
 # Cache is now only loaded/saved when explicitly requested by user functions.
 # Users can call save_id_cache() explicitly to persist the cache.
