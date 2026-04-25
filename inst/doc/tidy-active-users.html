@@ -346,9 +346,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span></code></pre></div>
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p><code>st_active_users()</code> is a focused, tidy wrapper around
-<code>st_batch_metrics()</code> that returns DAU/WAU/MAU in long
-format.</p>
+<p><code>st_active_users()</code> is a focused, tidy wrapper that
+returns DAU/WAU/MAU in long format, built on the same underlying
+machinery as <code>st_metrics()</code>.</p>
 <p>This makes downstream analysis intuitive with standard tidyverse
 verbs.</p>
 </div>
@@ -376,22 +376,23 @@ verbs.</p>
 </div>
 <div id="join-with-sales-data" class="section level2">
 <h2>Join With Sales Data</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>sales <span class="ot">&lt;-</span> <span class="fu">st_batch_metrics</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">os =</span> <span class="st">&quot;unified&quot;</span>,</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">app_list =</span> <span class="fu">c</span>(<span class="st">&quot;5ba4585f539ce75b97db6bcb&quot;</span>, <span class="st">&quot;67ec0bf3e540b65904256cc4&quot;</span>),</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">c</span>(<span class="st">&quot;revenue&quot;</span>, <span class="st">&quot;downloads&quot;</span>),</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">date_range =</span> <span class="fu">list</span>(<span class="at">start_date =</span> <span class="st">&quot;2025-01-01&quot;</span>, <span class="at">end_date =</span> <span class="st">&quot;2025-12-31&quot;</span>),</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">countries =</span> <span class="fu">c</span>(<span class="st">&quot;US&quot;</span>, <span class="st">&quot;GB&quot;</span>),</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">granularity =</span> <span class="st">&quot;monthly&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>sales_wide <span class="ot">&lt;-</span> sales <span class="sc">%&gt;%</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">group_by</span>(original_id, app_name, date, country, metric) <span class="sc">%&gt;%</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> metric, <span class="at">values_from =</span> value)</span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>combined <span class="ot">&lt;-</span> active_wide <span class="sc">%&gt;%</span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="fu">left_join</span>(sales_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;original_id&quot;</span>, <span class="st">&quot;app_name&quot;</span>, <span class="st">&quot;date&quot;</span>, <span class="st">&quot;country&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>sales <span class="ot">&lt;-</span> <span class="fu">st_metrics</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">app_id      =</span> <span class="fu">c</span>(<span class="st">&quot;5ba4585f539ce75b97db6bcb&quot;</span>, <span class="st">&quot;67ec0bf3e540b65904256cc4&quot;</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">os          =</span> <span class="st">&quot;unified&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">metrics     =</span> <span class="fu">c</span>(<span class="st">&quot;revenue&quot;</span>, <span class="st">&quot;downloads&quot;</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">countries   =</span> <span class="fu">c</span>(<span class="st">&quot;US&quot;</span>, <span class="st">&quot;GB&quot;</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">date_from   =</span> <span class="st">&quot;2025-01-01&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">date_to     =</span> <span class="st">&quot;2025-12-31&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">granularity =</span> <span class="st">&quot;monthly&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>sales_wide <span class="ot">&lt;-</span> sales <span class="sc">%&gt;%</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="fu">group_by</span>(app_id, date, country, metric) <span class="sc">%&gt;%</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> metric, <span class="at">values_from =</span> value)</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>combined <span class="ot">&lt;-</span> active_wide <span class="sc">%&gt;%</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">left_join</span>(sales_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;original_id&quot;</span> <span class="ot">=</span> <span class="st">&quot;app_id&quot;</span>, <span class="st">&quot;date&quot;</span>, <span class="st">&quot;country&quot;</span>))</span></code></pre></div>
 </div>
 <div id="app-level-kpi-aggregation" class="section level2">
 <h2>App-Level KPI Aggregation</h2>

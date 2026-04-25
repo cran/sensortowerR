@@ -16,7 +16,7 @@ test_that("st_active_users delegates to st_batch_metrics and returns active metr
     resolve_auth_token = function(auth_token, env_var = "SENSORTOWER_AUTH_TOKEN", error_message = NULL) {
       "token"
     },
-    st_batch_metrics = function(...) {
+    st_batch_metrics_impl = function(...) {
       tibble::tibble(
         original_id = c("app_b", "app_a", "app_a"),
         app_name = c("B", "A", "A"),

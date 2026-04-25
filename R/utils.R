@@ -682,7 +682,7 @@ lookup_app_names_by_id <- function(data) {
     id_chunks <- split(candidate_ids, ceiling(seq_along(candidate_ids) / chunk_size))
     direct_details <- lapply(id_chunks, function(ids) {
       tryCatch(
-        st_app_details(
+        st_app_details_impl(
           app_ids = ids,
           os = "unified",
           include_developer_contacts = FALSE,
@@ -1152,7 +1152,7 @@ fetch_unified_data <- function(
     if (verbose) message("Fetching iOS data for: ", ios_app_id)
     ios_result <- tryCatch(
       {
-        st_sales_report(
+        st_sales_report_impl(
           os = "ios",
           ios_app_id = ios_app_id,
           countries = countries,
@@ -1191,7 +1191,7 @@ fetch_unified_data <- function(
     if (verbose) message("Fetching Android data for: ", android_app_id)
     android_result <- tryCatch(
       {
-        st_sales_report(
+        st_sales_report_impl(
           os = "android",
           android_app_id = android_app_id,
           countries = countries,
@@ -1256,4 +1256,91 @@ fetch_unified_data <- function(
   }
 
   return(all_data)
+}
+
+# --- v1.0.0 shared parameter normalizers ---
+# Used by the unified st_metrics(), st_rankings(), st_app(), st_apps(), st_filter()
+
+normalize_os <- function(os) {
+  if (is.null(os) || !length(os)) {
+    rlang::abort("`os` must be one of 'ios', 'android', or 'unified'.")
+  }
+  os <- tolower(as.character(os[1]))
+  if (!os %in% c("ios", "android", "unified")) {
+    rlang::abort(sprintf("`os` must be one of 'ios', 'android', or 'unified' (got '%s').", os))
+  }
+  os
+}
+
+normalize_country <- function(country, allow_null = FALSE) {
+  if (is.null(country) || !length(country)) {
+    if (allow_null) return(NULL)
+    rlang::abort("`country` must be a non-empty character scalar (e.g., 'US', 'WW').")
+  }
+  country <- toupper(as.character(country[1]))
+  if (!grepl("^[A-Z]{2}$", country)) {
+    rlang::abort(sprintf("`country` must be a 2-letter code (got '%s').", country))
+  }
+  country
+}
+
+normalize_countries <- function(countries, allow_null = FALSE) {
+  if (is.null(countries) || !length(countries)) {
+    if (allow_null) return(NULL)
+    rlang::abort("`countries` must be a non-empty character vector (e.g., 'WW' or c('US','JP')).")
+  }
+  countries <- toupper(as.character(countries))
+  bad <- countries[!grepl("^[A-Z]{2}$", countries)]
+  if (length(bad)) {
+    rlang::abort(sprintf("`countries` entries must be 2-letter codes (bad: %s).",
+                         paste(bad, collapse = ", ")))
+  }
+  unique(countries)
+}
+
+normalize_dates <- function(date_from, date_to) {
+  df <- tryCatch(as.Date(date_from), error = function(e) NA)
+  dt <- tryCatch(as.Date(date_to),   error = function(e) NA)
+  if (is.na(df) || is.na(dt)) {
+    rlang::abort("`date_from` and `date_to` must be Date or ISO date strings (YYYY-MM-DD).")
+  }
+  if (df > dt) {
+    rlang::abort("`date_from` must be on or before `date_to`.")
+  }
+  list(date_from = df, date_to = dt)
+}
+
+normalize_granularity <- function(granularity) {
+  allowed <- c("daily", "weekly", "monthly", "quarterly")
+  if (is.null(granularity) || !length(granularity)) {
+    rlang::abort(sprintf("`granularity` must be one of %s.",
+                         paste(sprintf("'%s'", allowed), collapse = ", ")))
+  }
+  granularity <- tolower(as.character(granularity[1]))
+  if (!granularity %in% allowed) {
+    rlang::abort(sprintf("`granularity` must be one of %s (got '%s').",
+                         paste(sprintf("'%s'", allowed), collapse = ", "), granularity))
+  }
+  granularity
+}
+
+normalize_metrics <- function(metrics, allowed) {
+  if (is.null(metrics) || !length(metrics)) {
+    rlang::abort(sprintf("`metrics` must be one or more of %s.",
+                         paste(sprintf("'%s'", allowed), collapse = ", ")))
+  }
+  metrics <- tolower(as.character(metrics))
+  bad <- setdiff(metrics, allowed)
+  if (length(bad)) {
+    rlang::abort(sprintf("Unknown metric(s): %s. Allowed: %s.",
+                         paste(sprintf("'%s'", bad), collapse = ", "),
+                         paste(sprintf("'%s'", allowed), collapse = ", ")))
+  }
+  unique(metrics)
+}
+
+# Alias kept for the public-facing helper name used across v1.0.0 docs.
+get_auth_token <- function(auth_token = NULL, env_var = "SENSORTOWER_AUTH_TOKEN",
+                           error_message = NULL) {
+  resolve_auth_token(auth_token, env_var = env_var, error_message = error_message)
 }

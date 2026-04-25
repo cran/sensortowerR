@@ -33,8 +33,9 @@
 #' )
 #' }
 #'
-#' @export
-st_smart_metrics <- function(
+#' @keywords internal
+#' @noRd
+st_smart_metrics_impl <- function(
   app_ids,
   metrics = c("revenue", "downloads"),
   start_date = Sys.Date() - 30,
@@ -184,7 +185,7 @@ st_smart_metrics <- function(
     )
 
     result <- switch(group_name,
-      both = st_batch_metrics(
+      both = st_batch_metrics_impl(
         os = "unified",
         app_list = app_list_df,
         metrics = metrics,
@@ -195,7 +196,7 @@ st_smart_metrics <- function(
         auth_token = auth_token,
         verbose = verbose
       ),
-      ios = st_batch_metrics(
+      ios = st_batch_metrics_impl(
         os = "ios",
         app_list = app_list_df,
         metrics = metrics,
@@ -206,7 +207,7 @@ st_smart_metrics <- function(
         auth_token = auth_token,
         verbose = verbose
       ),
-      android = st_batch_metrics(
+      android = st_batch_metrics_impl(
         os = "android",
         app_list = app_list_df,
         metrics = metrics,
@@ -217,7 +218,7 @@ st_smart_metrics <- function(
         auth_token = auth_token,
         verbose = verbose
       ),
-      unified = st_batch_metrics(
+      unified = st_batch_metrics_impl(
         os = "unified",
         app_list = app_list_df,
         metrics = metrics,

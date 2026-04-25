@@ -114,8 +114,9 @@
 #' )
 #' }
 #'
-#' @export
-st_top_charts <- function(measure = "revenue",
+#' @keywords internal
+#' @noRd
+st_top_charts_impl <- function(measure = "revenue",
                           os,
                           comparison_attribute = "absolute",
                           time_range = "month",

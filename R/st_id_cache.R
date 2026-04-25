@@ -133,7 +133,7 @@ resolve_app_id <- function(id, auth_token = Sys.getenv("SENSORTOWER_AUTH_TOKEN")
   if (verbose) message("  Looking up ID via API...")
   
   result <- tryCatch({
-    st_app_lookup(id, auth_token = auth_token, verbose = FALSE)
+    st_app_lookup_impl(id, auth_token = auth_token, verbose = FALSE)
   }, error = function(e) NULL)
   
   # Cache the result
