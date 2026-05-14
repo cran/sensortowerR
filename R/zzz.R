@@ -11,6 +11,7 @@ utils::globalVariables(c(
   
   # st_metrics variables  
   "total_revenue", "total_downloads", "revenue", "downloads", "platform",
+  "category_id", "revenue_usd", "revenue_cents",
   
   # st_top_publishers variables
   "revenue_absolute", "apps"

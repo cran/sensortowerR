@@ -1,11 +1,8 @@
 test_that("API calls retrieve data", {
   skip_on_cran()
+  skip_if_no_auth()
 
   auth_token <- Sys.getenv("SENSORTOWER_AUTH_TOKEN")
-  if (auth_token == "") {
-    skip("Authentication token not found, skipping tests")
-  }
-
   # st_apps() - search by name (replaces st_app_info)
   apps <- st_apps(
     query = "Pokemon",

@@ -1,7 +1,6 @@
 test_that("st_filter() constructs an st_filter object from criteria", {
-  skip_if(!nzchar(Sys.getenv("SENSORTOWER_AUTH_TOKEN")),
-          "Auth token not available — skipping server-side filter creation")
   skip_on_cran()
+  skip_if_no_auth()
 
   f <- st_filter(
     date_from = "2025-01-01",

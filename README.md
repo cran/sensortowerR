@@ -102,6 +102,44 @@ as.character(us_rpgs_2025)  # Server-side filter ID
 combined <- c(us_rpgs_2025, st_filter(sdk = "unity"))
 ```
 
+### `st_market_metrics()` — tidy aggregate game market totals
+
+Use `st_market_metrics()` when the analysis needs market/category denominator
+series in a tidy schema. It wraps Sensor Tower's aggregate
+`/v1/{os}/games_breakdown` endpoint through `st_game_summary()` and returns
+stable snake_case columns.
+
+```r
+casino_market <- st_market_metrics(
+  category    = c("7006", "game_casino"),
+  countries   = "WW",
+  os          = "unified",
+  date_from   = "2025-01-01",
+  date_to     = "2025-12-31",
+  granularity = "monthly",
+  shape       = "wide"
+)
+```
+
+### `st_game_summary()` — low-level aggregate game market totals
+
+Use `st_game_summary()` when the analysis needs market/category/genre denominator series rather than title-level cohorts. It calls Sensor Tower's aggregate `/v1/{os}/games_breakdown` endpoint for `os = "ios"` or `os = "android"`; `os = "unified"` fetches the iOS and Android aggregate rows and sums them by date/country.
+
+```r
+market <- st_game_summary(
+  categories        = 7001,
+  countries         = c("US", "JP", "GB"),
+  os                = "unified",
+  date_granularity  = "monthly",
+  start_date        = "2025-01-01",
+  end_date          = "2025-12-31"
+)
+
+# Enriched revenue columns are in dollars. Raw endpoint revenue is cents.
+```
+
+Do not build denominator time series by batching top-N rankings, top charts, custom-filter pagination, or 1,500-app rosters. Those are title cohorts, not market totals, and they will drift with roster selection and chart cutoffs. Use `st_rankings()` and `st_apps(filter = ...)` for discovery, leaderboards, and peer cohorts; use `st_market_metrics()` for category-backed denominators.
+
 ## Function index
 
 ### Core (4 unified verbs)
@@ -112,6 +150,7 @@ combined <- c(us_rpgs_2025, st_filter(sdk = "unity"))
 | `st_rankings()` | Top charts / publishers / categories |
 | `st_app()` / `st_apps()` | ID lookup / name search / filter-based discovery |
 | `st_filter()` | Build a reusable filter object |
+| `st_market_metrics()` | Aggregate game category market revenue/download denominators |
 
 ### Analytics
 
@@ -126,7 +165,7 @@ combined <- c(us_rpgs_2025, st_filter(sdk = "unity"))
 | `st_demographics()` | Age / gender breakdowns |
 | `st_app_enriched()` | Multi-metric enrichment for known apps |
 | `st_yoy_metrics()` | Year-over-year comparison helper |
-| `st_game_summary()` | Game-specific genre / subgenre summary |
+| `st_game_summary()` | Low-level game category / market summary from `games_breakdown` |
 
 ### Publishers
 

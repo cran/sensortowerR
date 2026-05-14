@@ -56,8 +56,7 @@ test_that("st_rankings validates entity and os", {
 })
 
 test_that("ID resolution works based on OS parameter", {
-  skip_if_not(nzchar(Sys.getenv("SENSORTOWER_AUTH_TOKEN")),
-              "Sensor Tower token not available")
   skip_on_cran()
+  skip_if_no_auth()
   # Live-API test. Skipped in CRAN checks.
 })

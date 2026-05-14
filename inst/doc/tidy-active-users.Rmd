@@ -41,7 +41,7 @@ active_users <- st_active_users(
 )
 
 active_summary <- active_users %>%
-  group_by(original_id, app_name, metric, date, country) %>%
+  group_by(app_id, original_id, app_name, metric, date, country) %>%
   summarise(total_active_users = sum(value, na.rm = TRUE), .groups = "drop")
 ```
 
@@ -49,7 +49,7 @@ active_summary <- active_users %>%
 
 ```{r wide, purl=FALSE}
 active_wide <- active_users %>%
-  group_by(original_id, app_name, date, country, metric) %>%
+  group_by(app_id, original_id, app_name, date, country, metric) %>%
   summarise(value = sum(value, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(names_from = metric, values_from = value)
 ```
@@ -73,7 +73,7 @@ sales_wide <- sales %>%
   pivot_wider(names_from = metric, values_from = value)
 
 combined <- active_wide %>%
-  left_join(sales_wide, by = c("original_id" = "app_id", "date", "country"))
+  left_join(sales_wide, by = c("app_id", "date", "country"))
 ```
 
 ## App-Level KPI Aggregation
@@ -84,7 +84,7 @@ app_kpis <- combined %>%
     rev_per_dau = if_else(!is.na(dau) & dau > 0, revenue / dau, NA_real_),
     rev_per_mau = if_else(!is.na(mau) & mau > 0, revenue / mau, NA_real_)
   ) %>%
-  group_by(original_id, app_name, country) %>%
+  group_by(app_id, original_id, app_name, country) %>%
   summarise(
     avg_dau = mean(dau, na.rm = TRUE),
     avg_mau = mean(mau, na.rm = TRUE),

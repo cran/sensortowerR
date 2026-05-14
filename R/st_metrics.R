@@ -148,6 +148,7 @@ st_metrics <- function(app_id,
   normalized <- .st_metrics_normalize_output(
     data = raw_result,
     requested_ids = app_id,
+    requested_countries = countries,
     os = os,
     metrics = metrics,
     revenue_unit = revenue_unit,
@@ -282,6 +283,7 @@ st_metrics <- function(app_id,
 
 .st_metrics_normalize_output <- function(data,
                                          requested_ids,
+                                         requested_countries,
                                          os,
                                          metrics,
                                          revenue_unit,
@@ -313,9 +315,29 @@ st_metrics <- function(app_id,
   }
 
   if (all(c("metric", "value") %in% names(data))) {
-    normalized_long <- tibble::as_tibble(data) %>%
+    data_tbl <- tibble::as_tibble(data)
+    if (!"original_id" %in% names(data_tbl)) {
+      data_tbl$original_id <- NA_character_
+    }
+    if (!"app_id" %in% names(data_tbl)) {
+      data_tbl$app_id <- NA_character_
+    }
+    if (!"app_id_type" %in% names(data_tbl)) {
+      data_tbl$app_id_type <- NA_character_
+    }
+    has_canonical_unified <- !is.na(data_tbl$app_id_type) &
+      data_tbl$app_id_type == "unified" &
+      !is.na(data_tbl$app_id) &
+      nzchar(as.character(data_tbl$app_id))
+    data_tbl$.st_output_app_id <- ifelse(
+      has_canonical_unified,
+      as.character(data_tbl$app_id),
+      dplyr::coalesce(as.character(data_tbl$original_id), as.character(data_tbl$app_id))
+    )
+
+    normalized_long <- data_tbl %>%
       dplyr::transmute(
-        app_id = as.character(dplyr::coalesce(.data$original_id, .data$app_id)),
+        app_id = as.character(.data$.st_output_app_id),
         os = os,
         country = as.character(.data$country),
         date = as.Date(.data$date),
@@ -338,6 +360,28 @@ st_metrics <- function(app_id,
       )
   }
 
+  if (!"WW" %in% requested_countries) {
+    normalized_long <- normalized_long %>%
+      dplyr::filter(.data$country %in% requested_countries)
+  }
+
+  conflicts <- normalized_long %>%
+    dplyr::distinct(.data$app_id, .data$os, .data$country, .data$date, .data$metric, .data$value) %>%
+    dplyr::count(.data$app_id, .data$os, .data$country, .data$date, .data$metric, name = "n_values") %>%
+    dplyr::filter(.data$n_values > 1)
+  if (nrow(conflicts) > 0) {
+    rlang::abort(sprintf(
+      "st_metrics() returned conflicting duplicate metric values for app_id '%s', country '%s', date '%s', metric '%s'.",
+      conflicts$app_id[[1]],
+      conflicts$country[[1]],
+      format(conflicts$date[[1]], "%Y-%m-%d"),
+      conflicts$metric[[1]]
+    ))
+  }
+
+  normalized_long <- normalized_long %>%
+    dplyr::distinct(.data$app_id, .data$os, .data$country, .data$date, .data$metric, .data$value)
+
   if (revenue_unit == "cents") {
     revenue_rows <- normalized_long$metric == "revenue"
     normalized_long$value[revenue_rows] <- normalized_long$value[revenue_rows] * 100
@@ -352,7 +396,12 @@ st_metrics <- function(app_id,
 
   wide <- normalized_long %>%
     tidyr::pivot_wider(names_from = "metric", values_from = "value") %>%
-    dplyr::select("app_id", "os", "country", "date", dplyr::any_of(metrics)) %>%
+    dplyr::select("app_id", "os", "country", "date", dplyr::any_of(metrics))
+  for (metric_name in setdiff(metrics, names(wide))) {
+    wide[[metric_name]] <- numeric(nrow(wide))
+  }
+  wide <- wide %>%
+    dplyr::select("app_id", "os", "country", "date", dplyr::all_of(metrics)) %>%
     dplyr::arrange(.data$app_id, .data$date, .data$country)
 
   wide

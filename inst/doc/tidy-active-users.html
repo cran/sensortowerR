@@ -364,13 +364,13 @@ verbs.</p>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>active_summary <span class="ot">&lt;-</span> active_users <span class="sc">%&gt;%</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">group_by</span>(original_id, app_name, metric, date, country) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">group_by</span>(app_id, original_id, app_name, metric, date, country) <span class="sc">%&gt;%</span></span>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_active_users =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span></code></pre></div>
 </div>
 <div id="wide-reporting-table" class="section level2">
 <h2>Wide Reporting Table</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>active_wide <span class="ot">&lt;-</span> active_users <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">group_by</span>(original_id, app_name, date, country, metric) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">group_by</span>(app_id, original_id, app_name, date, country, metric) <span class="sc">%&gt;%</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> metric, <span class="at">values_from =</span> value)</span></code></pre></div>
 </div>
@@ -392,7 +392,7 @@ verbs.</p>
 <span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> metric, <span class="at">values_from =</span> value)</span>
 <span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a></span>
 <span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>combined <span class="ot">&lt;-</span> active_wide <span class="sc">%&gt;%</span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">left_join</span>(sales_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;original_id&quot;</span> <span class="ot">=</span> <span class="st">&quot;app_id&quot;</span>, <span class="st">&quot;date&quot;</span>, <span class="st">&quot;country&quot;</span>))</span></code></pre></div>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">left_join</span>(sales_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;app_id&quot;</span>, <span class="st">&quot;date&quot;</span>, <span class="st">&quot;country&quot;</span>))</span></code></pre></div>
 </div>
 <div id="app-level-kpi-aggregation" class="section level2">
 <h2>App-Level KPI Aggregation</h2>
@@ -401,7 +401,7 @@ verbs.</p>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="at">rev_per_dau =</span> <span class="fu">if_else</span>(<span class="sc">!</span><span class="fu">is.na</span>(dau) <span class="sc">&amp;</span> dau <span class="sc">&gt;</span> <span class="dv">0</span>, revenue <span class="sc">/</span> dau, <span class="cn">NA_real_</span>),</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">rev_per_mau =</span> <span class="fu">if_else</span>(<span class="sc">!</span><span class="fu">is.na</span>(mau) <span class="sc">&amp;</span> mau <span class="sc">&gt;</span> <span class="dv">0</span>, revenue <span class="sc">/</span> mau, <span class="cn">NA_real_</span>)</span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="fu">group_by</span>(original_id, app_name, country) <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="fu">group_by</span>(app_id, original_id, app_name, country) <span class="sc">%&gt;%</span></span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="at">avg_dau =</span> <span class="fu">mean</span>(dau, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="at">avg_mau =</span> <span class="fu">mean</span>(mau, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>

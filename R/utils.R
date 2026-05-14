@@ -41,7 +41,9 @@ st_api_base_url <- function() {
   unified_publishers_apps = c("unified", "publishers", "apps"),
   unified_sales_report_estimates = c("unified", "sales_report_estimates"),
   search_entities = c("{app_store}", "search_entities"),
-  games_breakdown = c("{os}", "games_breakdown")
+  games_breakdown = c("{os}", "games_breakdown"),
+  store_summary = c("{os}", "store_summary"),
+  compact_sales_report_estimates = c("{os}", "compact_sales_report_estimates")
 )
 
 resolve_endpoint_segment <- function(segment, placeholders) {

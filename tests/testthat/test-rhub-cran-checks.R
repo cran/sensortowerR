@@ -29,4 +29,6 @@ test_that("package functions exist", {
               "st_top_charts function should be available")
   expect_true(exists("st_game_summary", where = asNamespace("sensortowerR")), 
               "st_game_summary function should be available")
+  expect_true(exists("st_market_metrics", where = asNamespace("sensortowerR")),
+              "st_market_metrics function should be available")
 }) 
